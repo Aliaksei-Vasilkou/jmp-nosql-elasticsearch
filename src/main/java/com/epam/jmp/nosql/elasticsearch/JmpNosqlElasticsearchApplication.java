@@ -9,5 +9,4 @@ public class JmpNosqlElasticsearchApplication {
     public static void main(String[] args) {
         SpringApplication.run(JmpNosqlElasticsearchApplication.class, args);
     }
-
 }
