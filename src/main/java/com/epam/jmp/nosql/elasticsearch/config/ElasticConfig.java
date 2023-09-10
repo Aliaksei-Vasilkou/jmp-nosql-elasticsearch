@@ -8,20 +8,29 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.rest_client.RestClientTransport;
+
 @Configuration
 public class ElasticConfig {
 
     @Bean
     public RestClient restClient() {
-
         return RestClient.builder(
                         new HttpHost("<elastic_host>", 9243, "https"))
                 .setDefaultHeaders(buildAuthenticationHeaders())
-                .setRequestConfigCallback(requestConfigBuilder ->
-                        requestConfigBuilder
-                                .setConnectTimeout(5000)
-                                .setSocketTimeout(60000))
-                .build();
+                .setRequestConfigCallback(requestConfigBuilder -> requestConfigBuilder.setConnectTimeout(5000).setSocketTimeout(60000)).build();
+    }
+
+    @Bean
+    public ElasticsearchClient elasticsearchClient(RestClientTransport restClientTransport) {
+        return new ElasticsearchClient(restClientTransport);
+    }
+
+    @Bean
+    public RestClientTransport restClientTransport(RestClient restClient) {
+        return new RestClientTransport(restClient, new JacksonJsonpMapper());
     }
 
     private Header[] buildAuthenticationHeaders() {
